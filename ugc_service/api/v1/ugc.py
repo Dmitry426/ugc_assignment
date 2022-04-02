@@ -23,9 +23,8 @@ auth = AuthService()
     """,
 )
 async def put_data(
-        data: dict,
-        credentials: Optional[HTTPAuthorizationCredentials] = Security(security),
+    data: dict,
+    credentials: Optional[HTTPAuthorizationCredentials] = Security(security),
 ) -> int:
-    token = credentials
 
     return HTTPStatus.OK

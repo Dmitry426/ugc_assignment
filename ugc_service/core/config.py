@@ -1,8 +1,4 @@
-__all__ = [
-    "JwtSettings",
-    "UvicornSettings",
-    "ProjectSettings"
-]
+__all__ = ["JwtSettings", "UvicornSettings", "ProjectSettings"]
 
 import os
 
