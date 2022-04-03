@@ -14,4 +14,10 @@ services:
     volumes:
       - "./ugc_service:/src/app"
 
+  # todo добавить kafka
+
+  # todo добавить clickhouse
+
+  # todo добавить etl(нужно написать из kafka в clickhouse)
+
 
