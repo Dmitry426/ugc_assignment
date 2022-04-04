@@ -6,7 +6,9 @@
 !include <logos/ElasticSearch.puml>
 !include <logos/python.puml>
 !include <logos/react.puml>
-!include <C4/C4_Container>
+!include <logos/nginx.puml>
+'!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+!include <c4/C4_Component.puml>
 
 title Cinema Backend AS IS
 
@@ -16,18 +18,20 @@ LAYOUT_LANDSCAPE()
 actor Клиент as Client
 actor Админ as Admin
 
+
 Container(Frontend, "Какой-то фронт", "<$react>", "Взаимодействие с backend") #9a9a9a;line:grey;text:white
 
-Boundary(ETL, "ETL Service") {
-  Container(movies_etl, "Movie ETL", "python")
-  Container(actor_etl, "Actor ETL", "python")
-  Container(genre_etl, "Genre ETL", "python")
+Container_Boundary(ETL, "ETL Service") {
+  Component(movies_etl, "Movie ETL", "python")
+  Component(actor_etl, "Actor ETL", "python")
+  Component(genre_etl, "Genre ETL", "python")
 }
 
 Boundary(AAS, "Asinc API Service") {
-    Boundary(asinc_api, "Asinc API") {
-    Container(fast_api, "Fast API", "Fast API", "Отдает json")
-    Container(check_token, "Check token", "<$python>", "Разбирает токен")
+    Container(nginx_asinc, "Nginx", "<$nginx>", "Держит нагрузку")
+    Container_Boundary(asinc_api, "Asinc API") {
+    Component(fast_api, "Fast API", "Fast API", "Отдает json")
+    Component(check_token, "Check token", "<$python>", "Разбирает токен")
     }
   ContainerDb(redis_asinc, "Redis Cache", "<$redis>", "Сохраняет\nответы БД на\nнекоторое время")
   ContainerDb(es_asinc, "ElasticSearch", "<$elasticsearch>", "Отдает\nинфу по фильмам/\nперсонажам/жанрам")
@@ -35,13 +39,16 @@ Boundary(AAS, "Asinc API Service") {
   fast_api --> es_asinc
   fast_api --> redis_asinc
   fast_api <--> check_token
+  nginx_asinc --> fast_api
 }
 
 Boundary(AS, "Auth Service") {
+  Container(nginx_auth, "Nginx", "<$nginx>", "Держит нагрузку")
   Container(flask_auth, "Auth API", "<$flask>", "Сохраняет инфу о пользователях и ролях")
   ContainerDb(Postgresql_Auth, "Auth DB", "<$postgresql>", "БД\nпользователей")
   ContainerDb(Redis_Auth, "Auth Redis", "<$redis>", "Помогает\nобеспечивать\nвалидность\nтокенов")
 
+  nginx_auth --> flask_auth
   flask_auth --> Postgresql_Auth  : read/save data
   flask_auth --> Redis_Auth  : read/save data
 }
@@ -61,10 +68,10 @@ movies_etl --> es_asinc
 genre_etl --> es_asinc
 
 Client --> Frontend : Хочет\nпосмотреть\nфильм
-Frontend --> flask_auth : Запрос/получение токена
-Rel(Frontend, fast_api, "Отправка токена/получение данных", "json, jwt-токены")
+Frontend --> nginx_auth : Запрос/получение токена
+Rel(Frontend, nginx_asinc, "Отправка токена/получение данных", "json, jwt-токены")
 
 Rel(Admin, admin_panel, "Обновляет, добавляет контент")
-Rel(Admin, flask_auth, "Администрирует пользователей")
+Rel(Admin, nginx_auth, "Администрирует пользователей")
 
 @enduml
