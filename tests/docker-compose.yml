@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/ugc_service/Dockerfile
+      target: development
+    image: ugc_service
+    environment:
+      - PORT_APP=4000
+    ports:
+      - "127.0.0.1:4000:4000"
+    env_file:
+      - ./.env
+    volumes:
+      - "./ugc_service:/src/ugc_service"

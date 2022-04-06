@@ -2,7 +2,7 @@
 name = "etl_events"
 version = "0.1.0"
 description = ""
-authors = ["IMegaMaan <urbanmann@yandex.ru>"]
+authors = ["DmitryK , IMegaMaan , MENERGO "]
 
 [tool.poetry.dependencies]
 python = "^3.8"

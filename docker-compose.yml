@@ -2,7 +2,8 @@ version: "3.8"
 services:
   app:
     build:
-      context: .
+      context: ./ugc_service
+      dockerfile: ../Dockerfiles/ugc_service/Dockerfile
       target: development
     image: ugc_service
     environment:
@@ -12,12 +13,58 @@ services:
     env_file:
       - ./.env
     volumes:
-      - "./ugc_service:/src/app"
+      - "./ugc_service:/src/ugc_service"
+  etl:
+    build:
+      context: ./etl_events
+      dockerfile: ../Dockerfiles/etl_events/Dockerfile
+      target: development
+    image: etl_events
+    env_file:
+      - ./.env
+    volumes:
+      - "./etl_events:/src/etl_events"
 
-  # todo добавить kafka
+  zookeeper_kafka:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
 
-  # todo добавить clickhouse
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper_kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper_kafka:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  # todo добавить etl(нужно написать из kafka в clickhouse)
+  zookeeper_click:
+    image: zookeeper:latest
+    container_name: zookeeper_click
+    hostname: zookeeper_click
 
+  clickhouse-node1:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node1
+    hostname: clickhouse-node1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    depends_on:
+      - zookeeper_click
 
+  clickhouse-node2:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node2
+    hostname: clickhouse-node2
+    depends_on:
+      - zookeeper_click
