@@ -1,10 +1,8 @@
 from fastapi import FastAPI
 
-
 from ugc_service.api.v1 import ugc
 
 from .core.config import ProjectSettings
-
 
 base_settings = ProjectSettings()
 
