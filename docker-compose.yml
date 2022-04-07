@@ -2,8 +2,8 @@ version: "3.8"
 services:
   app:
     build:
-      context: ./ugc_service
-      dockerfile: ../Dockerfiles/ugc_service/Dockerfile
+      context: .
+      dockerfile: ./Dockerfiles/ugc_service/Dockerfile
       target: development
     image: ugc_service
     environment:
@@ -66,5 +66,12 @@ services:
     image: yandex/clickhouse-server:20.4
     container_name: clickhouse-node2
     hostname: clickhouse-node2
+    depends_on:
+      - zookeeper_click
+
+  clickhouse-node3:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node3
+    hostname: clickhouse-node3
     depends_on:
       - zookeeper_click
