@@ -283,4 +283,4 @@ config.yml
 draft.?.py
 k8s/
 *.env
-!/.env
+.env
