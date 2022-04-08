@@ -7,7 +7,7 @@ class ClickSettings(BaseSettings):
     """Represents click settings."""
 
     class Config:
-        env_prefix = "UVICORN_"
+        env_prefix = "CLICK_"
 
     host: str = "clickhouse-node1"
     port: str = "8123"

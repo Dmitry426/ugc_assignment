@@ -44,3 +44,4 @@ class KafkaSettings(BaseSettings):
 
     host: str = "kafka"
     port: str = "9092"
+    topic: str = "film"
