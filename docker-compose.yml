@@ -14,6 +14,10 @@ services:
       - ./.env
     volumes:
       - "./ugc_service:/src/ugc_service"
+    depends_on:
+      - zookeeper_kafka
+      - zookeeper_click
+
   etl:
     build:
       context: ./etl_events
@@ -24,6 +28,8 @@ services:
       - ./.env
     volumes:
       - "./etl_events:/src/etl_events"
+    depends_on:
+      - app
 
   zookeeper_kafka:
     image: confluentinc/cp-zookeeper:latest
@@ -44,7 +50,6 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CREATE_TOPICS: "film:1:1"
 
 
