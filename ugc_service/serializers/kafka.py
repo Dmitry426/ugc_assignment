@@ -7,6 +7,6 @@ from .base import JsonConfig
 
 class KafkaEventMovieViewTime(JsonConfig):
     user_uuid: str
-    movie_id: str or int
+    movie_id: str
     event: str
     created: datetime = Field(default_factory=datetime.utcnow)
