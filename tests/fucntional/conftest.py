@@ -36,9 +36,11 @@ def settings_fixture() -> TestSettings:
     exception=(RuntimeError, ConnectionError, TimeoutError),
     max_time=TestSettings().ping_backoff_timeout,
 )
-async def main():
+async def main(settings: TestSettings) -> ChClient:
     async with ClientSession() as s:
-        clickhouse = ChClient(s)
+        clickhouse = ChClient(
+            session=s, url=f"http://{settings.click.host}:{settings.click.port}/"
+        )
         await clickhouse.is_alive()
         yield clickhouse
         await clickhouse.close()
@@ -50,7 +52,7 @@ async def main():
     exception=(RuntimeError, ConnectionError, TimeoutError),
     max_time=TestSettings().ping_backoff_timeout,
 )
-async def send_one(settings):
+async def send_one(settings: TestSettings) -> AIOKafkaProducer:
     producer = AIOKafkaProducer(
         bootstrap_servers=f"{settings.kafka.host}:{settings.kafka.port}"
     )
@@ -113,7 +115,7 @@ def event_loop():
 
 
 @pytest.fixture(name="create_jwt_token", scope="function")
-def create_jwt_token(settings: TestSettings):
+def create_jwt_token(settings: TestSettings) -> jwt:
     payload = {
         "type": "access",
         "exp": datetime.utcnow() + timedelta(days=0, minutes=30),

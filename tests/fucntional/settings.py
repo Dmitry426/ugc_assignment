@@ -16,6 +16,7 @@ class ClickSettings(BaseSettings):
 class TestSettings(BaseSettings):
     """Represents Test settings."""
 
+    click: ClickSettings = ClickSettings()
     jwt_settings: JwtSettings = JwtSettings()
     kafka: KafkaSettings = KafkaSettings()
     test_url: str = Field("http://127.0.0.1:4000", env="TEST_URL")
