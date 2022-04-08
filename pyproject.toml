@@ -12,10 +12,16 @@ PyJWT = "^2.3.0"
 orjson = "^3.6.7"
 kafka-python = "2.0.2"
 clickhouse-driver = "^0.2.3"
+aiohttp = "^3.8.1"
+aiokafka = "^0.7.2"
+aiochclient = "^2.1.0"
+backoff = "^1.11.1"
+
 
 [tool.poetry.dev-dependencies]
-
-
+pytest = "^7.1.1"
+pytest-asyncio = "^0.18.2"
+uuid = "^1.30"
 
 [tool.black]
 exclude = '''

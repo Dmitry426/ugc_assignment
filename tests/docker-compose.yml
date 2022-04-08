@@ -2,7 +2,7 @@ version: "3.8"
 services:
   app:
     build:
-      context: .
+      context: ..
       dockerfile: ./Dockerfiles/ugc_service/Dockerfile
       target: development
     image: ugc_service
@@ -11,23 +11,25 @@ services:
     ports:
       - "127.0.0.1:4000:4000"
     env_file:
-      - ./.env
+      - ../.env
     volumes:
-      - "./ugc_service:/src/ugc_service"
+      - "../ugc_service:/src/ugc_service"
     depends_on:
       - zookeeper_kafka
       - zookeeper_click
 
-  etl:
+  test:
     build:
-      context: ./etl_events
-      dockerfile: ../Dockerfiles/etl_events/Dockerfile
+      context: ..
+      dockerfile: ./Dockerfiles/ugc_service/Dockerfile
       target: development
-    image: etl_events
+    command: [ "pytest", "-v" ]
     env_file:
-      - ./.env
+      - ../.env
     volumes:
-      - "./etl_events:/src/etl_events"
+      - "../ugc_service:/src/ugc_service"
+      - "./functional:/src/functional"
+      - "../pyproject.toml:/src/pyproject.toml"
     depends_on:
       - app
 
@@ -51,7 +53,6 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_CREATE_TOPICS: "film:1:1"
-
 
   zookeeper_click:
     image: zookeeper:latest

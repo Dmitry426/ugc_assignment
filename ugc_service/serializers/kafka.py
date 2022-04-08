@@ -1,21 +1,12 @@
 from datetime import datetime
 
-import orjson
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from .base import JsonConfig
 
 
-def orjson_dumps(v, *, default):
-    return orjson.dumps(v, default=default).decode()
-
-
-class ConfiguredBaseConfig(BaseModel):
-    class Config:
-        json_loads = orjson.loads
-        json_dumps = orjson_dumps
-
-
-class KafkaEventMovieViewTime(ConfiguredBaseConfig):
+class KafkaEventMovieViewTime(JsonConfig):
     user_uuid: str
-    movie_id: str or int
+    movie_id: str
     event: str
     created: datetime = Field(default_factory=datetime.utcnow)
