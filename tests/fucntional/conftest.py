@@ -50,8 +50,10 @@ async def main():
     exception=(RuntimeError, ConnectionError, TimeoutError),
     max_time=TestSettings().ping_backoff_timeout,
 )
-async def send_one():
-    producer = AIOKafkaProducer(bootstrap_servers="localhost:9092")
+async def send_one(settings):
+    producer = AIOKafkaProducer(
+        bootstrap_servers=f"{settings.kafka.host}:{settings.kafka.port}"
+    )
     await producer.start()
     yield producer
     await producer.stop()
