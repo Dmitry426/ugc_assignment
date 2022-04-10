@@ -1,3 +1,4 @@
+import random
 from http import HTTPStatus
 from typing import Optional
 
@@ -39,18 +40,23 @@ async def put_data(
         user_uuid = "anonymus"
 
     producer = AIOKafkaProducer(
-        bootstrap_servers=f"{kafka_settings.host}:{kafka_settings.port}"
+        bootstrap_servers=f"{kafka_settings.host}:{kafka_settings.port}",
     )
     await producer.start()
     event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
     try:
         value_event = str.encode(event.event)
         key_event = str.encode(event.user_uuid + event.movie_id)
-        await producer.send(
-            topic="movies",
-            value=value_event,
-            key=key_event,
+        # Попытка писать в разные партиции
+        partitions = await producer.partitions_for("film")
+        partition = random.choice(tuple(partitions))
+
+        message = await producer.send(
+            topic="film", value=value_event, key=key_event, partition=partition
         )
+        result = await message
     finally:
         await producer.stop()
-    return JSONResponse(status_code=200, content=event)
+    return JSONResponse(
+        status_code=200, content={"topic": result.topic, "partition": result.partition}
+    )
