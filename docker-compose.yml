@@ -15,43 +15,34 @@ services:
     volumes:
       - "./ugc_service:/src/ugc_service"
     depends_on:
+      - kafka
       - zookeeper_kafka
       - zookeeper_click
 
-  etl:
-    build:
-      context: ./etl_events
-      dockerfile: ../Dockerfiles/etl_events/Dockerfile
-      target: development
-    image: etl_events
-    env_file:
-      - ./.env
-    volumes:
-      - "./etl_events:/src/etl_events"
-    depends_on:
-      - app
-
   zookeeper_kafka:
     image: confluentinc/cp-zookeeper:latest
+    ports:
+      - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - 22181:2181
 
   kafka:
     image: confluentinc/cp-kafka:latest
     depends_on:
       - zookeeper_kafka
     ports:
-      - "9092:29092"
+      - "9092:9092"
     environment:
+      KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper_kafka:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://kafka:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_CREATE_TOPICS: "film:2:1"
-
 
   zookeeper_click:
     image: zookeeper:latest
@@ -65,6 +56,9 @@ services:
     ports:
       - "8123:8123"
       - "9000:9000"
+    volumes:
+      - "./ugc_service/clickhouse/node1:/etc/clickhouse-server"
+      - "./ugc_service/clickhouse/scripts:/tmp"
     depends_on:
       - zookeeper_click
 
@@ -72,6 +66,8 @@ services:
     image: yandex/clickhouse-server:20.4
     container_name: clickhouse-node2
     hostname: clickhouse-node2
+    volumes:
+      - "./ugc_service/clickhouse/node2:/etc/clickhouse-server"
     depends_on:
       - zookeeper_click
 
@@ -79,5 +75,20 @@ services:
     image: yandex/clickhouse-server:20.4
     container_name: clickhouse-node3
     hostname: clickhouse-node3
+    volumes:
+      - "./ugc_service/clickhouse/node3:/etc/clickhouse-server"
+      - "./ugc_service/clickhouse/scripts:/tmp"
     depends_on:
       - zookeeper_click
+
+  clickhouse-node4:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node4
+    hostname: clickhouse-node4
+    volumes:
+      - "./ugc_service/clickhouse/node4:/etc/clickhouse-server"
+    depends_on:
+      - zookeeper_click
+
+volumes:
+  static_volume:

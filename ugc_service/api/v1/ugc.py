@@ -43,10 +43,11 @@ async def put_data(
         bootstrap_servers=f"{kafka_settings.host}:{kafka_settings.port}",
     )
     await producer.start()
-    event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
+    # event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
+    event = KafkaEventMovieViewTime(**data)
     try:
         value_event = str.encode(event.event)
-        key_event = str.encode(event.user_uuid + event.movie_id)
+        key_event = str.encode(str(event.user_uuid) + str(event.movie_id))
         # Попытка писать в разные партиции
         partitions = await producer.partitions_for("film")
         partition = random.choice(tuple(partitions))

@@ -42,6 +42,6 @@ class KafkaSettings(BaseSettings):
     class Config:
         env_prefix = "KAFKA_"
 
-    host: str = "kafka"
+    host: str = "127.0.0.1"
     port: str = "9092"
     topic: str = "film"
