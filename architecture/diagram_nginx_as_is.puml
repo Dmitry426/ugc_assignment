@@ -1,0 +1,77 @@
+@startuml
+!include <logos/flask.puml>
+!include <logos/django.puml>
+!include <logos/redis.puml>
+!include <logos/postgresql.puml>
+!include <logos/ElasticSearch.puml>
+!include <logos/python.puml>
+!include <logos/react.puml>
+!include <logos/nginx.puml>
+'!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+!include <c4/C4_Component.puml>
+
+title Cinema Backend AS IS
+
+LAYOUT_LANDSCAPE()
+
+
+actor Клиент as Client
+actor Админ as Admin
+
+
+Container(Frontend, "Какой-то фронт", "<$react>", "Взаимодействие с backend") #9a9a9a;line:grey;text:white
+
+Container_Boundary(ETL, "ETL Service") {
+  Component(movies_etl, "Movie ETL", "python")
+  Component(actor_etl, "Actor ETL", "python")
+  Component(genre_etl, "Genre ETL", "python")
+}
+
+Boundary(AAS, "Asinc API Service") {
+    Container(nginx_asinc, "Nginx", "<$nginx>", "Держит нагрузку")
+    Container_Boundary(asinc_api, "Asinc API") {
+    Component(fast_api, "Fast API", "Fast API", "Отдает json")
+    Component(check_token, "Check token", "<$python>", "Разбирает токен")
+    }
+  ContainerDb(redis_asinc, "Redis Cache", "<$redis>", "Сохраняет\nответы БД на\nнекоторое время")
+  ContainerDb(es_asinc, "ElasticSearch", "<$elasticsearch>", "Отдает\nинфу по фильмам/\nперсонажам/жанрам")
+
+  fast_api --> es_asinc
+  fast_api --> redis_asinc
+  fast_api <--> check_token
+  nginx_asinc --> fast_api
+}
+
+Boundary(AS, "Auth Service") {
+  Container(nginx_auth, "Nginx", "<$nginx>", "Держит нагрузку")
+  Container(flask_auth, "Auth API", "<$flask>", "Сохраняет инфу о пользователях и ролях")
+  ContainerDb(Postgresql_Auth, "Auth DB", "<$postgresql>", "БД\nпользователей")
+  ContainerDb(Redis_Auth, "Auth Redis", "<$redis>", "Помогает\nобеспечивать\nвалидность\nтокенов")
+
+  nginx_auth --> flask_auth
+  flask_auth --> Postgresql_Auth  : read/save data
+  flask_auth --> Redis_Auth  : read/save data
+}
+
+Boundary(MAS, "Movies Admin Service") {
+  Container(admin_panel, "Admin Panel", "<$django>", "Админка для БД")
+  ContainerDb(Postgresql_movies, "Movies DB", "<$postgresql>", "БД фильмов,\nжанров, актеров")
+  admin_panel --> Postgresql_movies : read/save data
+}
+
+Postgresql_movies --> actor_etl : Извлекает данные из БД
+Postgresql_movies --> movies_etl
+Postgresql_movies --> genre_etl
+
+actor_etl --> es_asinc : Загружает данные в ES
+movies_etl --> es_asinc
+genre_etl --> es_asinc
+
+Client --> Frontend : Хочет\nпосмотреть\nфильм
+Frontend --> nginx_auth : Запрос/получение токена
+Rel(Frontend, nginx_asinc, "Отправка токена/получение данных", "json, jwt-токены")
+
+Rel(Admin, admin_panel, "Обновляет, добавляет контент")
+Rel(Admin, nginx_auth, "Администрирует пользователей")
+
+@enduml
