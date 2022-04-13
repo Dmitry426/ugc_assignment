@@ -1,35 +1,38 @@
-import random
-from http import HTTPStatus
+import logging
+
 from typing import Optional
 
-from aiokafka import AIOKafkaProducer
-from fastapi import APIRouter, Security
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import Depends
+
 from starlette.responses import JSONResponse
 
-from ugc_service.core.config import KafkaSettings
-from ugc_service.serializers.kafka import KafkaEventMovieViewTime
+from ugc_service.models.kafka import KafkaEventMovieViewTime
 from ugc_service.services.base_service import AuthService
+from ugc_service.services.kafka_producer import EventSender, get_event_sender
+
+
+from fastapi import APIRouter, Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+http_bearer = HTTPBearer()
 
 security = HTTPBearer(auto_error=False)
-kafka_settings = KafkaSettings()
-
 auth = AuthService()
 
 
-@router.post(
-    "/data",
-    response_model=HTTPStatus,
-    name="UGC",
-    description="""
-    Uploads data to Kafka , if success response OK , if error response Error.
-    JWT token required !
-    """,
+@router.post("/event",
+             name="UGC",
+             description="""
+Uploads data to Kafka , if success response OK , if error response Error.
+JWT token required !
+""",
 )
-async def put_data(
+async def send_view_progress(
     data: dict,
+    event_sender: EventSender = Depends(get_event_sender),
     credentials: Optional[HTTPAuthorizationCredentials] = Security(security),
 ):
     token = credentials
@@ -39,25 +42,8 @@ async def put_data(
     else:
         user_uuid = "anonymus"
 
-    producer = AIOKafkaProducer(
-        bootstrap_servers=f"{kafka_settings.host}:{kafka_settings.port}",
-    )
-    await producer.start()
-    # event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
-    event = KafkaEventMovieViewTime(**data)
-    try:
-        value_event = str.encode(event.event)
-        key_event = str.encode(str(event.user_uuid) + str(event.movie_id))
-        # Попытка писать в разные партиции
-        partitions = await producer.partitions_for("film")
-        partition = random.choice(tuple(partitions))
-
-        message = await producer.send(
-            topic="film", value=value_event, key=key_event, partition=partition
-        )
-        result = await message
-    finally:
-        await producer.stop()
+    event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
+    await event_sender.send_viewed_progress(event)
     return JSONResponse(
-        status_code=200, content={"topic": result.topic, "partition": result.partition}
+        status_code=200,
     )
