@@ -1,12 +1,13 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
-from ugc_service.api.v1 import event
-from ugc_service.db.storage import get_event_storage, KafkaEventStorage
+from ugc_service.api.v1 import ugc
 
-from .core.config import ProjectSettings
+from .core.config import KafkaSettings, ProjectSettings
+from .db.storage import get_aio_producer
+from .services.kafka_unit_producer import AIOProducer
 
 base_settings = ProjectSettings()
-
+kafka_settings = KafkaSettings()
 app = FastAPI(
     title=base_settings.project_name,
     docs_url="/api/openapi",
@@ -15,15 +16,13 @@ app = FastAPI(
 
 
 @app.on_event("startup")
-async def startup_event():
-    await get_event_storage()
+async def startup_event(aio_producer: AIOProducer = Depends(get_aio_producer)):
+    pass
 
 
 @app.on_event("shutdown")
-async def shutdown_event():
-    event_storage: KafkaEventStorage = await get_event_storage()
-    await event_storage.producer.stop()
+def shutdown_event(aio_producer: AIOProducer = Depends(get_aio_producer)):
+    aio_producer.close()
 
 
-# app.include_router(ugc.router, prefix="/api/v1/ugc", tags=["ugc"])
-app.include_router(event.router, prefix="/api/v1/event", tags=["event"])
+app.include_router(ugc.router, prefix="/api/v1/ugc", tags=["ugc"])

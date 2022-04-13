@@ -1,18 +1,13 @@
 import logging
-
 from typing import Optional
 
-from fastapi import Depends
+from confluent_kafka import KafkaException
+from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from starlette.responses import JSONResponse
-
+from ugc_service.db.storage import AIOProducer, get_aio_producer
 from ugc_service.models.kafka import KafkaEventMovieViewTime
 from ugc_service.services.base_service import AuthService
-from ugc_service.services.kafka_producer import EventSender, get_event_sender
-
-
-from fastapi import APIRouter, Security
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -23,17 +18,18 @@ security = HTTPBearer(auto_error=False)
 auth = AuthService()
 
 
-@router.post("/event",
-             name="UGC",
-             description="""
+@router.post(
+    "/event",
+    name="UGC",
+    description="""
 Uploads data to Kafka , if success response OK , if error response Error.
 JWT token required !
 """,
 )
 async def send_view_progress(
     data: dict,
-    event_sender: EventSender = Depends(get_event_sender),
     credentials: Optional[HTTPAuthorizationCredentials] = Security(security),
+    aio_producer: AIOProducer = Depends(get_aio_producer),
 ):
     token = credentials
     if token:
@@ -43,7 +39,9 @@ async def send_view_progress(
         user_uuid = "anonymus"
 
     event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
-    await event_sender.send_viewed_progress(event)
-    return JSONResponse(
-        status_code=200,
-    )
+    value_event = str.encode(event.event)
+    try:
+        result = await aio_producer.produce("film", value=value_event)
+        return {"timestamp": result.timestamp()}
+    except KafkaException as ex:
+        raise HTTPException(status_code=500, detail=ex.args[0].str())
