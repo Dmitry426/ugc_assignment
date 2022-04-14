@@ -3,20 +3,16 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfiles/ugc_service/Dockerfile
-      target: development
-    image: ugc_service
+      target: production
     environment:
       - PORT_APP=4000
     ports:
       - "127.0.0.1:4000:4000"
     env_file:
       - ./.env
-    volumes:
-      - "./ugc_service:/src/ugc_service"
     depends_on:
       - kafka
       - zookeeper_kafka
-      - zookeeper_click
 
   zookeeper_kafka:
     image: confluentinc/cp-zookeeper:latest
@@ -79,3 +75,12 @@ services:
 
     depends_on:
       - zookeeper_click
+
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - app
