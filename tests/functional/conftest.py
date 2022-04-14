@@ -12,8 +12,7 @@ from aiochclient import ChClient
 from aiohttp import ClientSession
 from aiokafka import AIOKafkaProducer
 from pydantic import BaseModel
-
-from tests.fucntional.settings import TestSettings
+from settings import TestSettings
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -68,9 +67,7 @@ async def http_client_fixture(settings, kafka_client, click_house) -> ClientSess
     Add dependency fixtures `click_client` and `kafka_client` to
     check they are ready to work.
     """
-    async with ClientSession(
-        base_url=f"http://{settings.url_settings.host}:{settings.url_settings.port}"
-    ) as session:
+    async with ClientSession(base_url=settings.test_url) as session:
         yield session
 
 
@@ -82,18 +79,19 @@ def make_get_request(http_client: ClientSession):
         method: str,
         url: str,
         params: Optional[Dict[str, Any]] = None,
+        json: Optional[Dict[str, Any]] = None,
         jwt: Optional[str] = None,
     ) -> HTTPResponse:
         params = params or {}
         headers = {}
-
+        json = json or {}
         if jwt:
             headers = {"Authorization": "Bearer {}".format(jwt)}
 
         logger.debug("URL: %s", url)
 
         async with http_client.request(
-            method=method, url=url, params=params, headers=headers
+            method=method, url=url, params=params, headers=headers, json=json
         ) as response:
             body = await response.json()
             logger.warning("Response: %s", body)
@@ -120,7 +118,7 @@ def create_jwt_token(settings: TestSettings) -> jwt:
         "type": "access",
         "exp": datetime.utcnow() + timedelta(days=0, minutes=30),
         "iat": datetime.utcnow(),
-        "sub": {"user_id": uuid.uuid4()},
+        "sub": {"user_id": str(uuid.uuid4())},
     }
     return jwt.encode(
         payload,

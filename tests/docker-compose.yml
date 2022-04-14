@@ -27,7 +27,6 @@ services:
     env_file:
       - ../.env
     volumes:
-      - "../ugc_service:/src/ugc_service"
       - "./functional:/src/functional"
       - "../pyproject.toml:/src/pyproject.toml"
     depends_on:
