@@ -8,6 +8,8 @@ authors = ["DmitryK , IMegaMaan , MENERGO "]
 python = "^3.8"
 kafka-python = "2.0.2"
 clickhouse-driver = "^0.2.3"
+backoff = "^1.11.1"
+pydantic = "^1.9.0"
 
 [tool.poetry.dev-dependencies]
 
