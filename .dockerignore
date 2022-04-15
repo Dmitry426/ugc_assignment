@@ -27,3 +27,4 @@ __pycache__/
 *.pidb
 *.pyc
 data_es
+.architecture

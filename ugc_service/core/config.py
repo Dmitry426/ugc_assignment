@@ -1,4 +1,4 @@
-__all__ = ["JwtSettings", "UvicornSettings", "ProjectSettings"]
+__all__ = ["JwtSettings", "UvicornSettings", "ProjectSettings", "KafkaSettings"]
 
 import os
 
@@ -33,3 +33,15 @@ class ProjectSettings(BaseSettings):
 
     base_dir: str = os.path.dirname(os.path.abspath(__file__))
     project_name: str = "UGC"
+    ping_backoff_timeout: int = 30
+
+
+class KafkaSettings(BaseSettings):
+    """Represents Kafka settings."""
+
+    class Config:
+        env_prefix = "KAFKA_"
+
+    host: str = "127.0.0.1"
+    port: str = "9092"
+    topic: str = "film"
