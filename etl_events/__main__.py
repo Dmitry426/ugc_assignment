@@ -1,26 +1,16 @@
-"""Это черновик"""
+import backoff
 
-from kafka import KafkaConsumer
-
-
-def get_consumer():
-    consumer = KafkaConsumer(
-        "movies",
-        bootstrap_servers=["localhost:9092"],
-        auto_offset_reset="earliest",
-        group_id="echo-messages-to-stdout",
-    )
-    return consumer
+from kafka.errors import NoBrokersAvailable
 
 
-def get_messages(consumer: KafkaConsumer):
-    # todo тут получение сообщений. Можно сделать через генератор
-    for message in consumer:
-        print(message.value)
+from etl_events.core.config import settings
+from etl_events.services.services import create_tables, etl_process
+from etl_events.db.clickhouse import clickhouse_client
+from etl_events.db.consumer import consumer
 
 
-if __name__ == "__main__":
-    # 1. запускаем konsumer
-    consumer = get_consumer()
-    # 2. читаем сообщения
-    get_messages(consumer)
+@backoff.on_exception(backoff.expo, NoBrokersAvailable)
+def main():
+    topic: str = settings.topic
+    create_tables(clickhouse_client)
+    etl_process(topic, consumer, clickhouse_client)
