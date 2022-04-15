@@ -1,7 +1,5 @@
 import backoff
 
-from clickhouse_driver import Client
-from kafka import KafkaConsumer
 from kafka.errors import NoBrokersAvailable
 
 from etl_events.core.config import settings
