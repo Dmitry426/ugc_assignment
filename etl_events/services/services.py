@@ -1,18 +1,18 @@
-__all__ = ['create_tables', 'etl_process']
+__all__ = ["create_tables", "etl_process"]
 
-import backoff
 import json
 
+import backoff
 from clickhouse_driver import Client
-from etl_events.core.config import settings
-from kafka import KafkaConsumer
-from kafka import TopicPartition
+from kafka import KafkaConsumer, TopicPartition
 from kafka.structs import OffsetAndMetadata
+
+from etl_events.core.config import settings
 
 
 @backoff.on_exception(backoff.expo, Exception, max_tries=3)
 def create_tables(client: Client) -> None:
-    client.execute('CREATE DATABASE IF NOT EXISTS movies ON CLUSTER company_cluster;')
+    client.execute("CREATE DATABASE IF NOT EXISTS movies ON CLUSTER company_cluster;")
     client.execute(
         """CREATE TABLE IF NOT EXISTS movies.film ON CLUSTER company_cluster(
             user_uuid String,
@@ -21,17 +21,20 @@ def create_tables(client: Client) -> None:
             created_at DateTime64
             ) Engine=MergeTree()
             ORDER BY created_at;
-     """)
+     """
+    )
 
 
 @backoff.on_exception(backoff.expo, Exception, max_tries=3)
 def insert_clickhouse(client: Client, data: list) -> None:
-    values: str = str([i for i in data]).lstrip('[').rstrip(']')
+    values: str = str([i for i in data]).lstrip("[").rstrip("]")
     client.execute(
         """
         INSERT INTO movies.film (
         user_uuid, movie_id, event, created_at)  VALUES {}
-        """.format(values)
+        """.format(
+            values
+        )
     )
 
 

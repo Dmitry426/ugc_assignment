@@ -14,7 +14,6 @@ services:
     volumes:
       - "./ugc_service:/src/ugc_service"
     depends_on:
-
       - zookeeper
       - zookeeper_click
 
@@ -93,8 +92,6 @@ services:
     image: confluentinc/cp-server:latest
     hostname: broker
     container_name: broker
-    depends_on:
-      - zookeeper
     ports:
       - "9092:9092"
       - "9101:9101"
@@ -118,6 +115,6 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
-      
+
     depends_on:
-      - zookeeper_click
+        - zookeeper

@@ -13,6 +13,23 @@ services:
     depends_on:
       - kafka
       - zookeeper_kafka
+      -
+  etl:
+    build:
+      context: ./etl_events
+      dockerfile: ../Dockerfiles/etl_events/Dockerfile
+      target: production
+    image: etl_events
+    env_file:
+      - ./.env
+    volumes:
+      - "./etl_events:/src/etl_events"
+    depends_on:
+      - app
+      - clickhouse-node1
+      - clickhouse-node2
+      - clickhouse-node3
+      - clickhouse-node4
 
   zookeeper_kafka:
     image: confluentinc/cp-zookeeper:latest
