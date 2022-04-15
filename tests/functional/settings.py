@@ -1,6 +1,25 @@
 from pydantic import BaseSettings, Field
 
-from ugc_service.core.config import JwtSettings, KafkaSettings
+
+class JwtSettings(BaseSettings):
+    """Represents JWT settings."""
+
+    class Config:
+        env_prefix = "JWT_"
+
+    secret_key: str = "super-secret-key"
+    algorithm: str = "HS256"
+
+
+class KafkaSettings(BaseSettings):
+    """Represents Kafka settings."""
+
+    class Config:
+        env_prefix = "KAFKA_"
+
+    host: str = "127.0.0.1"
+    port: str = "9092"
+    topic: str = "film"
 
 
 class ClickSettings(BaseSettings):
