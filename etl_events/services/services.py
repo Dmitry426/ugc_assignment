@@ -11,7 +11,9 @@ from kafka.structs import OffsetAndMetadata
 from etl_events.core.config import settings
 
 
-@backoff.on_exception(backoff.expo, Exception, max_tries=3)
+@backoff.on_exception(
+    backoff.expo, exception=(RuntimeError, ConnectionError, TimeoutError), max_tries=3
+)
 def create_tables(client: Client) -> None:
     client.execute("CREATE DATABASE IF NOT EXISTS movies ON CLUSTER company_cluster;")
     client.execute(
@@ -26,7 +28,9 @@ def create_tables(client: Client) -> None:
     )
 
 
-@backoff.on_exception(backoff.expo, Exception, max_tries=3)
+@backoff.on_exception(
+    backoff.expo, exception=(RuntimeError, ConnectionError, TimeoutError), max_tries=3
+)
 def insert_clickhouse(client: Client, data: list) -> None:
     values: str = str([i for i in data]).lstrip("[").rstrip("]")
     client.execute(
@@ -39,7 +43,9 @@ def insert_clickhouse(client: Client, data: list) -> None:
     )
 
 
-@backoff.on_exception(backoff.expo, Exception, max_tries=3)
+@backoff.on_exception(
+    backoff.expo, exception=(RuntimeError, ConnectionError, TimeoutError), max_tries=3
+)
 def etl_process(topic: str, consumer: KafkaConsumer, clickhouse_client: Client) -> None:
     start_interval = datetime.now()
     data: list = []

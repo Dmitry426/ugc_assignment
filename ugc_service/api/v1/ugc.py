@@ -40,8 +40,9 @@ async def send_view_progress(
     event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
     value_event = event.toJSON()
     try:
-        result = await aio_producer.produce("film", value=value_event)
-        return {"timestamp": result.timestamp()}
+        await aio_producer.produce("film", value=value_event)
+        return HTTPStatus.CREATED
     except KafkaException as ex:
-        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-                            detail=ex.args[0].str())
+        raise HTTPException(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=ex.args[0].str()
+        )

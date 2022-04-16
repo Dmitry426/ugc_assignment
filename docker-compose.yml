@@ -15,7 +15,6 @@ services:
       - "./ugc_service:/src/ugc_service"
     depends_on:
       - zookeeper
-      - zookeeper_click
 
   etl:
     build:

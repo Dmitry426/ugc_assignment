@@ -11,6 +11,7 @@ class KafkaSettings(BaseSettings):
 
     k_host: str = "localhost"
     k_port: str = "9092"
+    k_backoff_timeout: int = 30
 
 
 class ClickHouseSettings(BaseSettings):
