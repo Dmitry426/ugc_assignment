@@ -1,4 +1,5 @@
 import logging
+from http import HTTPStatus
 from typing import Optional
 
 from confluent_kafka import KafkaException
@@ -42,4 +43,5 @@ async def send_view_progress(
         result = await aio_producer.produce("film", value=value_event)
         return {"timestamp": result.timestamp()}
     except KafkaException as ex:
-        raise HTTPException(status_code=500, detail=ex.args[0].str())
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                            detail=ex.args[0].str())
