@@ -1,6 +1,7 @@
 __all__ = ["create_tables", "etl_process"]
 
 import json
+from datetime import datetime
 
 import backoff
 from clickhouse_driver import Client
@@ -40,12 +41,15 @@ def insert_clickhouse(client: Client, data: list) -> None:
 
 @backoff.on_exception(backoff.expo, Exception, max_tries=3)
 def etl_process(topic: str, consumer: KafkaConsumer, clickhouse_client: Client) -> None:
+    start_interval = datetime.now()
     data: list = []
     for msg in consumer:
         data.append(tuple(json.loads(msg.value).values()))
-        if len(data) == settings.chunk:
+        td = (datetime.now() - start_interval).total_seconds()
+        if len(data) == settings.chunk or td > 300:
             insert_clickhouse(clickhouse_client, data)
             data.clear()
             tp = TopicPartition(topic, msg.partition)
             options = {tp: OffsetAndMetadata(msg.offset + 1, None)}
             consumer.commit(options)
+            start_interval = datetime.now()
