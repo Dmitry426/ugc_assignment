@@ -1,5 +1,7 @@
 __all__ = ["settings"]
 
+import os
+
 from pydantic import BaseSettings
 
 
@@ -9,7 +11,7 @@ class KafkaSettings(BaseSettings):
     class Config:
         env_prefix = "ETL_"
 
-    k_host: str = "192.168.5.35"
+    k_host: str = os.getenv("KAFKA_HOST", "localhost")
     k_port: str = "9092"
 
 
@@ -19,7 +21,7 @@ class ClickHouseSettings(BaseSettings):
     class Config:
         env_prefix = "ETL_"
 
-    c_host: str = "192.168.5.35"
+    c_host: str = os.getenv("CLICK_HOST", "localhost")
     c_port: str = "9000"
 
 
