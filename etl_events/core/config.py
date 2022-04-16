@@ -9,8 +9,9 @@ class KafkaSettings(BaseSettings):
     class Config:
         env_prefix = "ETL_"
 
-    k_host: str = "192.168.5.35"
+    k_host: str = "localhost"
     k_port: str = "9092"
+    k_backoff_timeout: int = 30
 
 
 class ClickHouseSettings(BaseSettings):
@@ -19,7 +20,7 @@ class ClickHouseSettings(BaseSettings):
     class Config:
         env_prefix = "ETL_"
 
-    c_host: str = "192.168.5.35"
+    c_host: str = "localhost"
     c_port: str = "9000"
 
 
