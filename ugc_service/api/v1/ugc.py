@@ -12,8 +12,6 @@ from ugc_service.services.base_service import AuthService
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-http_bearer = HTTPBearer()
-
 security = HTTPBearer(auto_error=False)
 auth = AuthService()
 
