@@ -20,5 +20,6 @@ def consumer() -> KafkaConsumer:
         enable_auto_commit=False,
         group_id="$Default",
         value_deserializer=lambda x: x.decode("utf-8"),
+        reconnect_backoff_ms=100,
     )
     return conn
