@@ -9,7 +9,7 @@ consumer: KafkaConsumer = KafkaConsumer(
     security_protocol="PLAINTEXT",
     bootstrap_servers=[f"{settings.k_host}:{settings.k_port}"],
     auto_offset_reset="earliest",
-    enable_auto_commit=True,
+    enable_auto_commit=False,
     group_id="$Default",
     value_deserializer=lambda x: x.decode("utf-8"),
 )
