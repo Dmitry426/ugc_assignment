@@ -12,8 +12,6 @@ from ugc_service.services.base_service import AuthService
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-http_bearer = HTTPBearer()
-
 security = HTTPBearer(auto_error=False)
 auth = AuthService()
 
@@ -39,7 +37,7 @@ async def send_view_progress(
         user_uuid = "anonymus"
 
     event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
-    value_event = str.encode(event.event)
+    value_event = event.toJSON()
     try:
         result = await aio_producer.produce("film", value=value_event)
         return {"timestamp": result.timestamp()}
