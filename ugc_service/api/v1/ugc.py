@@ -28,7 +28,7 @@ async def send_view_progress(
     data: dict,
     credentials: Optional[HTTPAuthorizationCredentials] = Security(security),
     aio_producer: AIOProducer = Depends(get_aio_producer),
-) :
+):
     token = credentials
     if token:
         payload = auth.decode_token(token=token.credentials)
