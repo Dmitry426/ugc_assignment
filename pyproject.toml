@@ -67,6 +67,7 @@ disable = [
     "missing-docstring",
     "too-few-public-methods",
     "too-many-arguments",
+    "global-statement",
 ]
 
 ignored-modules = ["pydantic"]

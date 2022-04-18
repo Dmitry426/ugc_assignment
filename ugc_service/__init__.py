@@ -1,3 +1,4 @@
+__all__ = ["app"]
 from fastapi import Depends, FastAPI
 
 from ugc_service.api.v1 import ugc
@@ -16,7 +17,7 @@ app = FastAPI(
 
 
 @app.on_event("startup")
-async def startup_event(aio_producer: AIOProducer = Depends(get_aio_producer)):
+async def startup_event():
     pass
 
 

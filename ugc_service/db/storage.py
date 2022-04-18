@@ -10,7 +10,7 @@ project_settings = ProjectSettings()
 
 config = {"bootstrap.servers": f"{kafka_settings.host}:{kafka_settings.port}"}
 
-aio_producer: Optional[AIOProducer] = None
+AIO_PRODUCER: Optional[AIOProducer] = None
 
 
 @backoff.on_exception(
@@ -19,6 +19,6 @@ aio_producer: Optional[AIOProducer] = None
     max_time=project_settings.ping_backoff_timeout,
 )
 async def get_aio_producer() -> AIOProducer:
-    global aio_producer
-    aio_producer = AIOProducer(config)
-    return aio_producer
+    global AIO_PRODUCER
+    AIO_PRODUCER = AIOProducer(config)
+    return AIO_PRODUCER

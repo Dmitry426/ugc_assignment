@@ -38,7 +38,7 @@ async def send_view_progress(
         user_uuid = "anonymus"
 
     event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
-    value_event = event.toJSON()
+    value_event = event.to_json()
     try:
         await aio_producer.produce("film", value=value_event)
         return HTTPStatus.CREATED
