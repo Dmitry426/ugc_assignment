@@ -7,9 +7,9 @@ authors = ["DmitryK , IMegaMaan , MENERGO "]
 [tool.poetry.dependencies]
 python = "^3.8"
 uvicorn = "^0.17.6"
-fastapi = "^0.75.1"
+fastapi = "^0.75.2"
 PyJWT = "^2.3.0"
-orjson = "^3.6.7"
+orjson = "^3.6.8"
 kafka-python = "2.0.2"
 clickhouse-driver = "^0.2.3"
 aiohttp = "^3.8.1"

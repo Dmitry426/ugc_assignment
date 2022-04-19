@@ -32,7 +32,7 @@ def create_tables(client: Client) -> None:
     backoff.expo, exception=(RuntimeError, ConnectionError, TimeoutError), max_tries=3
 )
 def insert_clickhouse(client: Client, data: list) -> None:
-    values: str = str(list(data)).lstrip("[").rstrip("]")
+    values: str = ",".join(map(str, data))
     client.execute(
         f"""
         INSERT INTO movies.film (

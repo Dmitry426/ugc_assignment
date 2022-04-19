@@ -111,7 +111,6 @@ services:
     depends_on:
       - zookeeper
 
-
   nginx:
     image: nginx
     ports:
