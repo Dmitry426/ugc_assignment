@@ -40,7 +40,7 @@ async def send_view_progress(
     x_request_id = req.headers.get('x-request-id')
 
     event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
-    value_event = event.toJSON()
+    value_event = event.to_json()
     try:
         await aio_producer.produce("film", value=value_event)
         logger.info(f"Запись в Kafka, X-Request-Id: {x_request_id}")

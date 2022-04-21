@@ -1,3 +1,5 @@
+__all__ = ["app"]
+
 import logging.config
 
 from fastapi import Depends, FastAPI
@@ -24,7 +26,7 @@ app = FastAPI(
 
 
 @app.on_event("startup")
-async def startup_event(aio_producer: AIOProducer = Depends(get_aio_producer)):
+async def startup_event():
     pass
 
 
