@@ -1,9 +1,13 @@
 __all__ = ["clickhouse_client"]
 
 import backoff
+import logging
+
 from clickhouse_driver import Client
 
 from etl_events.core.config import settings
+
+logger = logging.getLogger("ETL_events")
 
 
 @backoff.on_exception(
@@ -11,4 +15,6 @@ from etl_events.core.config import settings
 )
 def clickhouse_client() -> Client:
     client: Client = Client(host=settings.c_host, port=settings.c_port)
+    if client:
+        logger.info(f"Подключение к ClickHouse")
     return client

@@ -3,6 +3,11 @@ from etl_events.db.clickhouse import clickhouse_client
 from etl_events.db.consumer import consumer
 from etl_events.services.services import create_tables, etl_process
 
+from etl_events.core.logger import get_logger
+
+logger = get_logger("ETL_events")
+logger.info("Логирование ETL_events началось")
+
 clickhouse_client = clickhouse_client()
 consumer = consumer()
 

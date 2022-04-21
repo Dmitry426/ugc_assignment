@@ -1,9 +1,13 @@
 __all__ = ["consumer"]
 
 import backoff
+import logging
+
 from kafka import KafkaConsumer
 
 from etl_events.core.config import settings
+
+logger = logging.getLogger("ETL_events")
 
 
 @backoff.on_exception(
@@ -22,4 +26,6 @@ def consumer() -> KafkaConsumer:
         value_deserializer=lambda x: x.decode("utf-8"),
         reconnect_backoff_ms=100,
     )
+    if conn:
+        logger.info(f"Подключение к Kafka")
     return conn
