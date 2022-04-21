@@ -3,9 +3,12 @@ __all__ = ["get_aio_producer"]
 from typing import Optional
 
 import backoff
+import logging
 
 from ugc_service.core.config import KafkaSettings, ProjectSettings
 from ugc_service.services.kafka_unit_producer import AIOProducer
+
+logger = logging.getLogger("UGC_service")
 
 kafka_settings = KafkaSettings()
 project_settings = ProjectSettings()
