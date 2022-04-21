@@ -24,6 +24,8 @@ pytest = "^7.1.1"
 pytest-asyncio = "^0.18.2"
 uuid = "^1.30"
 aiokafka = "^0.7.2"
+flake8 = "^4.0.1"
+isort = "^5.10.1"
 
 
 [tool.black]
