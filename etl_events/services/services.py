@@ -37,14 +37,14 @@ def create_tables(client: Client) -> None:
     backoff.expo, exception=(RuntimeError, ConnectionError, TimeoutError), max_tries=3
 )
 def insert_clickhouse(client: Client, data: list) -> None:
-    values: str = ', '.join(map(str, data))
+
+    values: str = ",".join(map(str, data))
+
     client.execute(
-        """
+        f"""
         INSERT INTO movies.film (
-        user_uuid, movie_id, event, created_at)  VALUES {}
-        """.format(
-            values
-        )
+        user_uuid, movie_id, event, created_at)  VALUES {values}
+        """
     )
     logger.info(f"X-Request-Id: None: успешно прошла запись в ClickHouse")
 
@@ -57,14 +57,17 @@ def etl_process(topic: str, consumer: KafkaConsumer, clickhouse_client: Client) 
     data: list = []
     for msg in consumer:
         data.append(tuple(json.loads(msg.value).values()))
-        td = (datetime.now() - start_interval).total_seconds()
-        if len(data) == settings.chunk or td > 300:
+
+        time_data = (datetime.now() - start_interval).total_seconds()
+        if len(data) == settings.chunk or time_data > 300:
+
             count_msg = len(data)
+
             insert_clickhouse(clickhouse_client, data)
             logger.info(f"X-Request-Id: None: сообщение из {count_msg}"
                         f" событий записано в топик {topic}")
             data.clear()
-            tp = TopicPartition(topic, msg.partition)
-            options = {tp: OffsetAndMetadata(msg.offset + 1, None)}
+            topic_partition = TopicPartition(topic, msg.partition)
+            options = {topic_partition: OffsetAndMetadata(msg.offset + 1, None)}
             consumer.commit(options)
             start_interval = datetime.now()
