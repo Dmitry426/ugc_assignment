@@ -21,7 +21,7 @@ auth = AuthService()
     "/event",
     name="UGC",
     description="""
-Uploads data to Kafka , if success response OK , if error response Error.
+Uploads data to Kafka , if success response OK , if error response Error .
 JWT token required !
 """,
 )

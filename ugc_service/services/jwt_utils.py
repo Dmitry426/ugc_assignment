@@ -35,8 +35,8 @@ class Auth:
             )
             return payload["sub"]
         except jwt.ExpiredSignatureError as ex:
-            logger.error(f"X-Request-Id: {x_request_id}: Token expired: {ex}")
+            logger.error(f"X-Request-Id: {x_request_id}: token expired: {ex}")
             raise HTTPException(status_code=401, detail="Token expired")
         except jwt.InvalidTokenError as ex:
-            logger.error(f"X-Request-Id: {x_request_id}: Invalid token: {ex}")
+            logger.error(f"X-Request-Id: {x_request_id}: invalid token: {ex}")
             raise HTTPException(status_code=401, detail="Invalid token")
