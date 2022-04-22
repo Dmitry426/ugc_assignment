@@ -1,3 +1,5 @@
+__all__ = ["get_aio_producer"]
+
 from typing import Optional
 
 import backoff
