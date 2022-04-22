@@ -21,7 +21,7 @@ auth = AuthService()
     "/event",
     name="UGC",
     description="""
-Uploads data to Kafka , if success response OK , if error response Error.
+Uploads data to Kafka , if success response OK , if error response Error .
 JWT token required !
 """,
 )
@@ -33,7 +33,7 @@ async def send_view_progress(
 ):
     token = credentials
     if token:
-        payload = auth.decode_token(token=token.credentials)
+        payload = auth.decode_token(token=token.credentials, x_request_id=x_request_id)
         user_uuid = payload["user_id"]
     else:
         user_uuid = "anonymus"
