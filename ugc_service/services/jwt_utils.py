@@ -20,7 +20,11 @@ class Auth:
     def algorithm(self) -> str:
         pass
 
-    def decode_token(self, token: Optional[str] = None):
+    def decode_token(
+        self,
+        token: Optional[str] = None,
+        x_request_id: Optional[str] = None
+    ):
         try:
             payload = jwt.decode(
                 token,
@@ -31,8 +35,8 @@ class Auth:
             )
             return payload["sub"]
         except jwt.ExpiredSignatureError as ex:
-            logger.error(f"X-Request-Id: None: Token expired: {ex}")
+            logger.error(f"X-Request-Id: {x_request_id}: Token expired: {ex}")
             raise HTTPException(status_code=401, detail="Token expired")
         except jwt.InvalidTokenError as ex:
-            logger.error(f"X-Request-Id: None: Invalid token: {ex}")
+            logger.error(f"X-Request-Id: {x_request_id}: Invalid token: {ex}")
             raise HTTPException(status_code=401, detail="Invalid token")
