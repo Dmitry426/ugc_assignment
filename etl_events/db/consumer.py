@@ -27,5 +27,7 @@ def consumer() -> KafkaConsumer:
         reconnect_backoff_ms=100,
     )
     if conn:
-        logger.info(f"Подключение к Kafka")
+        logger.info(f"X-Request-Id: None: подключился к Kafka")
+    else:
+        logger.error(f"X-Request-Id: None: не смог подключиться к Kafka")
     return conn
