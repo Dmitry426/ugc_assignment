@@ -73,6 +73,11 @@ CMD python -m ugc_service
 FROM python-base as production
 ENV FASTAPI_ENV=production
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-COPY gevent_runner.py .
 COPY ugc_service ./ugc_service
-CMD python -m ugc_service
+COPY async_runner.py .
+CMD uvicorn \
+   async_runner:app \
+  --proxy-headers \
+  --host  $HOST_APP \
+  --port $PORT_APP \
+  --workers $WORKERS\

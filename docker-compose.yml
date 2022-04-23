@@ -15,7 +15,6 @@ services:
       - "./ugc_service:/src/ugc_service"
     depends_on:
       - zookeeper
-      - zookeeper_click
 
   etl:
     build:
@@ -118,3 +117,12 @@ services:
 
     depends_on:
         - zookeeper
+
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - app
