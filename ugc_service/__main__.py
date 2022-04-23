@@ -15,4 +15,5 @@ uvicorn.run(
     port=url_settings.port,
     log_config=LOGGING,
     log_level=logging.DEBUG,
+    proxy_headers=True,
 )

@@ -1,8 +1,8 @@
 __all__ = ["clickhouse_client"]
 
-import backoff
 import logging
 
+import backoff
 from clickhouse_driver import Client
 
 from etl_events.core.config import settings
@@ -16,7 +16,7 @@ logger = logging.getLogger("ETL_events")
 def clickhouse_client() -> Client:
     client: Client = Client(host=settings.c_host, port=settings.c_port)
     if client:
-        logger.info(f"X-Request-Id: None: подключился к ClickHouse")
+        logger.info("X-Request-Id: None: подключился к ClickHouse")
     else:
-        logger.error(f"X-Request-Id: None: не смог подключиться к ClickHouse")
+        logger.error("X-Request-Id: None: не смог подключиться к ClickHouse")
     return client

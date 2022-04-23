@@ -1,8 +1,8 @@
 __all__ = ["consumer"]
 
-import backoff
 import logging
 
+import backoff
 from kafka import KafkaConsumer
 
 from etl_events.core.config import settings

@@ -1,4 +1,7 @@
+__all__ = ["AIOProducer"]
+
 import asyncio
+from abc import abstractmethod
 from threading import Thread
 
 import confluent_kafka
@@ -6,9 +9,14 @@ from confluent_kafka import KafkaException
 
 
 class AIOProducer:
-    def __init__(self, configs: dict, loop=None):
+    @property
+    @abstractmethod
+    def configs(self) -> dict:
+        pass
+
+    def __init__(self, loop=None):
         self._loop = loop or asyncio.get_event_loop()
-        self._producer = confluent_kafka.Producer(configs)
+        self._producer = confluent_kafka.Producer(self.configs)
         self._cancelled = False
         self._poll_thread = Thread(target=self._poll_loop)
         self._poll_thread.start()
