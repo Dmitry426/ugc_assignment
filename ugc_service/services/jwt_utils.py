@@ -1,8 +1,12 @@
+import logging
+
 from abc import abstractmethod
 from typing import List, Optional
 
 import jwt
 from fastapi import HTTPException
+
+logger = logging.getLogger(__name__)
 
 
 class Auth:
@@ -16,7 +20,12 @@ class Auth:
     def algorithm(self) -> Optional[List[str]]:
         pass
 
-    def decode_token(self, token: str):
+    def decode_token(
+        self,
+        token: Optional[str] = None,
+        x_request_id: Optional[str] = None
+    ):
+
         try:
             payload = jwt.decode(
                 jwt=token,
@@ -26,11 +35,10 @@ class Auth:
                 algorithms=self.algorithm,
             )
             return payload["sub"]
-        except jwt.ExpiredSignatureError as jwt_expired:
-            raise HTTPException(
-                status_code=401, detail="Token expired"
-            ) from jwt_expired
-        except jwt.InvalidTokenError as invalid_token:
-            raise HTTPException(
-                status_code=401, detail="Invalid token"
-            ) from invalid_token
+
+        except jwt.ExpiredSignatureError as ex:
+            logger.error(f"X-Request-Id: {x_request_id}: token expired: {ex}")
+            raise HTTPException(status_code=401, detail="Token expired")
+        except jwt.InvalidTokenError as ex:
+            logger.error(f"X-Request-Id: {x_request_id}: invalid token: {ex}")
+            raise HTTPException(status_code=401, detail="Invalid token")
