@@ -1,3 +1,5 @@
+__all__ = ["setry_app"]
+
 import sentry_sdk
 from fastapi import FastAPI
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
