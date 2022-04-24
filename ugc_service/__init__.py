@@ -12,7 +12,7 @@ from .core.logger import LOGGING
 
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger("UGC_service")
-logger.info("Логирование UGC началось")
+logger.info("None - Логирование UGC началось")
 
 base_settings = ProjectSettings()
 kafka_settings = KafkaSettings()

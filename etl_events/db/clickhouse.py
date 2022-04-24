@@ -16,7 +16,7 @@ logger = logging.getLogger("ETL_events")
 def clickhouse_client() -> Client:
     client: Client = Client(host=settings.c_host, port=settings.c_port)
     if client:
-        logger.info(f"X-Request-Id: None: подключился к ClickHouse")
+        logger.info(f"None - подключился к ClickHouse")
     else:
-        logger.error(f"X-Request-Id: None: не смог подключиться к ClickHouse")
+        logger.error(f"None - не смог подключиться к ClickHouse")
     return client
