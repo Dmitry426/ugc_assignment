@@ -91,13 +91,13 @@ def make_get_request(http_client: ClientSession):
         if jwt_token:
             headers = {"Authorization": f"Bearer {jwt_token}"}
 
-        logger.debug("URL: %s", url)
+        logger.debug("None - URL: %s", url)
 
         async with http_client.request(
             method=method, url=url, params=params, headers=headers, json=json
         ) as response:
             body = await response.json()
-            logger.warning("Response: %s", body)
+            logger.warning("None - Response: %s", body)
 
             return HTTPResponse(
                 body=body,

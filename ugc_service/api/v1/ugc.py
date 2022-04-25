@@ -42,10 +42,10 @@ async def send_view_progress(
     value_event = event.to_json()
     try:
         await aio_producer.produce("film", value=value_event)
-        logger.info(f"X-Request-Id: {x_request_id}: запись в Kafka")
+        logger.info(f"{x_request_id} - запись в Kafka")
         return HTTPStatus.CREATED
     except KafkaException as kafka_ex:
-        logger.error(f"X-Request-Id: {x_request_id}: ошибка записи в Kafka: {kafka_ex}")
+        logger.error(f"{x_request_id} - ошибка записи в Kafka: {kafka_ex}")
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=kafka_ex.args[0].str()
         ) from kafka_ex

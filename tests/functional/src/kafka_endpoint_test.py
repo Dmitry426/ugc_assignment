@@ -21,4 +21,4 @@ class TestUserAuth:
             jwt_token=create_jwt_token,
         )
         assert response.status == HTTPStatus.OK
-        logger.info("Response status : %s", response.status)
+        logger.info("None - Response status : %s", response.status)

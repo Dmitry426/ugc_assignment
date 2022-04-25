@@ -5,7 +5,7 @@ from etl_events.db.consumer import consumer
 from etl_events.services.services import create_tables, etl_process
 
 logger = get_logger("ETL_events")
-logger.info("X-Request-Id: None: логирование ETL_events началось")
+logger.info("None - логирование ETL_events началось")
 
 clickhouse_client = clickhouse_client()
 consumer = consumer()
