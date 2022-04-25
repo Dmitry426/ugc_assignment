@@ -1,9 +1,8 @@
 from etl_events.core.config import settings
+from etl_events.core.logger import get_logger
 from etl_events.db.clickhouse import clickhouse_client
 from etl_events.db.consumer import consumer
 from etl_events.services.services import create_tables, etl_process
-
-from etl_events.core.logger import get_logger
 
 logger = get_logger("ETL_events")
 logger.info("None - логирование ETL_events началось")

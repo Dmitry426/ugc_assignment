@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
-import backoff as backoff
+import backoff
 import jwt
 import pytest
 import pytest_asyncio
@@ -36,11 +36,12 @@ def settings_fixture() -> TestSettings:
     max_time=TestSettings().ping_backoff_timeout,
 )
 async def main(settings: TestSettings) -> ChClient:
-    async with ClientSession() as s:
+    async with ClientSession() as session:
         clickhouse = ChClient(
-            session=s, url=f"http://{settings.click.host}:{settings.click.port}/"
+            session=session, url=f"http://{settings.click.host}:{settings.click.port}/"
         )
-        await clickhouse.is_alive()
+        if not await clickhouse.is_alive():
+            logger.info("Waiting for click")
         yield clickhouse
         await clickhouse.close()
 
@@ -55,7 +56,8 @@ async def send_one(settings: TestSettings) -> AIOKafkaProducer:
     producer = AIOKafkaProducer(
         bootstrap_servers=f"{settings.kafka.host}:{settings.kafka.port}"
     )
-    await producer.start()
+    if not await producer.start():
+        logger.info("Waiting for kafka")
     yield producer
     await producer.stop()
 
@@ -80,13 +82,14 @@ def make_get_request(http_client: ClientSession):
         url: str,
         params: Optional[Dict[str, Any]] = None,
         json: Optional[Dict[str, Any]] = None,
-        jwt: Optional[str] = None,
+        jwt_token: Optional[str] = None,
     ) -> HTTPResponse:
         params = params or {}
         headers = {}
         json = json or {}
-        if jwt:
-            headers = {"Authorization": "Bearer {}".format(jwt)}
+
+        if jwt_token:
+            headers = {"Authorization": f"Bearer {jwt_token}"}
 
         logger.debug("None - URL: %s", url)
 

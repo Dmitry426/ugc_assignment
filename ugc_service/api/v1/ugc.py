@@ -3,12 +3,12 @@ from http import HTTPStatus
 from typing import Optional
 
 from confluent_kafka import KafkaException
-from fastapi import APIRouter, Depends, HTTPException, Security, Header
+from fastapi import APIRouter, Depends, Header, HTTPException, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from ugc_service.db.storage import AIOProducer, get_aio_producer
+from ugc_service.db.storage import get_aio_producer
 from ugc_service.models.kafka import KafkaEventMovieViewTime
-from ugc_service.services.base_service import AuthService
+from ugc_service.services.base_service import AuthService, KafkaStorage
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ JWT token required !
 async def send_view_progress(
     data: dict,
     credentials: Optional[HTTPAuthorizationCredentials] = Security(security),
-    aio_producer: AIOProducer = Depends(get_aio_producer),
+    aio_producer: KafkaStorage = Depends(get_aio_producer),
     x_request_id: Optional[str] = Header(None),
 ):
     token = credentials
@@ -39,13 +39,13 @@ async def send_view_progress(
         user_uuid = "anonymus"
 
     event = KafkaEventMovieViewTime(user_uuid=user_uuid, **data)
-    value_event = event.toJSON()
+    value_event = event.to_json()
     try:
         await aio_producer.produce("film", value=value_event)
         logger.info(f"{x_request_id} - запись в Kafka")
         return HTTPStatus.CREATED
-    except KafkaException as ex:
-        logger.error(f"{x_request_id} - ошибка записи в Kafka: {ex}")
+    except KafkaException as kafka_ex:
+        logger.error(f"{x_request_id} - ошибка записи в Kafka: {kafka_ex}")
         raise HTTPException(
-            status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=ex.args[0].str()
-        )
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=kafka_ex.args[0].str()
+        ) from kafka_ex

@@ -6,13 +6,15 @@ services:
       target: production
     environment:
       - PORT_APP=4000
+      - WORKERS=2
+      - HOST_APP=0.0.0.0
     ports:
       - "127.0.0.1:4000:4000"
     env_file:
       - ./.env
     depends_on:
-      - kafka
-      - zookeeper_kafka
+      - broker
+
   etl:
     build:
       context: ./etl_events
@@ -108,7 +110,6 @@ services:
 
     depends_on:
       - zookeeper
-
 
   nginx:
     image: nginx

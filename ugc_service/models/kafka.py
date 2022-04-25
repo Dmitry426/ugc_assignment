@@ -1,6 +1,9 @@
+__all__ = ["KafkaEventMovieViewTime"]
+
 from datetime import datetime
-from pydantic import Field
 from typing import Union
+
+from pydantic import Field
 
 from .base import JsonConfig
 
