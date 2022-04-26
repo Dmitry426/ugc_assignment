@@ -73,7 +73,7 @@ disable = [
     "global-statement",
 ]
 
-ignored-modules = ["pydantic"]
+ignored-modules = ["pydantic", "orjson"]
 good-names = []
 
 [tool.pylint.similarities]

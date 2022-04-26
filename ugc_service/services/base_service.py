@@ -1,3 +1,5 @@
+__all__ = ["AuthService", "KafkaStorage"]
+
 from abc import ABC
 
 from ugc_service.core.config import JwtSettings, KafkaSettings

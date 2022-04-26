@@ -19,8 +19,7 @@ logger = logging.getLogger("ETL_events")
 )
 def create_tables(client: Client) -> None:
     client.execute("CREATE DATABASE IF NOT EXISTS movies ON CLUSTER company_cluster;")
-    logger.info(f'None - успешно создана/существует БД movies')
-=======
+    logger.info("None - успешно создана/существует БД movies")
 
     client.execute(
         """CREATE TABLE IF NOT EXISTS movies.film ON CLUSTER company_cluster(
@@ -32,7 +31,7 @@ def create_tables(client: Client) -> None:
             ORDER BY created_at;
      """
     )
-    logger.info(f"None - успешно создана/существует таблица film")
+    logger.info("None - успешно создана/существует таблица film")
 
 
 @backoff.on_exception(
@@ -67,8 +66,9 @@ def etl_process(topic: str, consumer: KafkaConsumer, clickhouse_client: Client) 
 
             insert_clickhouse(clickhouse_client, data)
 
-            logger.info(f"None - сообщение из {count_msg}"
-                        f" событий записано в топик {topic}")
+            logger.info(
+                f"None - сообщение из {count_msg}" f" событий записано в топик {topic}"
+            )
 
             data.clear()
             topic_partition = TopicPartition(topic, msg.partition)

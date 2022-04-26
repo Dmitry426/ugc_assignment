@@ -125,6 +125,6 @@ def create_jwt_token(settings: TestSettings) -> jwt:
     }
     return jwt.encode(
         payload,
-        settings.jwt_settings.secret_key,
-        algorithm=settings.jwt_settings.algorithm,
+        settings.jwt_settings.secret_key.get_secret_value(),
+        algorithm=settings.jwt_settings.algorithm.get_secret_value(),
     )

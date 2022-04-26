@@ -19,4 +19,3 @@ def clickhouse_client() -> Client:
         logger.info("None - подключился к ClickHouse")
     else:
         logger.error("None - не смог подключиться к ClickHouse")
-

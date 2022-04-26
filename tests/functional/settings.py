@@ -1,4 +1,4 @@
-from pydantic import BaseSettings, Field
+from pydantic import BaseSettings, Field, SecretStr
 
 
 class JwtSettings(BaseSettings):
@@ -7,8 +7,8 @@ class JwtSettings(BaseSettings):
     class Config:
         env_prefix = "JWT_"
 
-    secret_key: str = "super-secret-key"
-    algorithm: str = "HS256"
+    secret_key: SecretStr = "super-secret-key"
+    algorithm: SecretStr = "HS256"
 
 
 class KafkaSettings(BaseSettings):
