@@ -1,0 +1,74 @@
+name: YandexPracticum CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest wemake-python-styleguide mypy lxml flake8-html
+        poetry install
+
+    - name: Create directories
+      run: |
+        mkdir -p reports/ugc_service/wemake-python-styleguide/
+        mkdir -p reports/etl_events/wemake-python-styleguide/
+        mkdir -p reports/ugc_service/mypy/
+        mkdir -p reports/etl_events/mypy/
+
+    - name: Lint with wemake-python-styleguide
+      run: |
+        flake8 ugc_service --exit-zero --format=html --htmldir=reports/ugc_service/wemake-python-styleguide/
+        flake8 etl_events --exit-zero --format=html --htmldir=reports/etl_events/wemake-python-styleguide/
+
+    - name: Check typing with mypy
+      run: |
+        mypy --html-report reports/ugc_service/mypy/ ./ugc_service || true
+        mypy --html-report reports/etl_events/mypy/ ./etl_events || true
+
+    - name: Upload reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: html_reports
+        path: reports/
+
+    - name: Run Tests
+      if: always()
+      run: |
+        cp .env_example .env
+        make test
+
+    - name: Notification to telegram
+      if: cancelled() == false
+      uses: xinthink/action-telegram@v1.1
+      with:
+        botToken: ${{ secrets.BotToken }}
+        chatId: ${{ secrets.ChatID }}
+        jobStatus: ${{ job.status }}
+        skipSuccess: false

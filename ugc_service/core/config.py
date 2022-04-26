@@ -1,8 +1,14 @@
-__all__ = ["JwtSettings", "UvicornSettings", "ProjectSettings", "KafkaSettings"]
+__all__ = [
+    "JwtSettings",
+    "UvicornSettings",
+    "ProjectSettings",
+    "KafkaSettings",
+    "CentrySettings",
+]
 
 import os
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, SecretStr
 
 
 class UvicornSettings(BaseSettings):
@@ -21,8 +27,8 @@ class JwtSettings(BaseSettings):
     class Config:
         env_prefix = "JWT_"
 
-    secret_key: str = "super-secret-key"
-    algorithm: str = "HS256"
+    secret_key: SecretStr = "super-secret-key"
+    algorithm: SecretStr = "HS256"
 
 
 class ProjectSettings(BaseSettings):
@@ -45,3 +51,13 @@ class KafkaSettings(BaseSettings):
     host: str = "127.0.0.1"
     port: str = "9092"
     topic: str = "film"
+
+
+class CentrySettings(BaseSettings):
+    """Represents Centry settings."""
+
+    class Config:
+        env_prefix = "CENTRY_"
+
+    dsn: SecretStr
+    traces_sample_rate: float = 1

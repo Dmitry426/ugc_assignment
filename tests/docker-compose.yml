@@ -15,8 +15,7 @@ services:
     volumes:
       - "../ugc_service:/src/ugc_service"
     depends_on:
-      - zookeeper
-      - zookeeper_click
+      - broker
 
   test:
     build:
@@ -31,6 +30,12 @@ services:
       - "../pyproject.toml:/src/pyproject.toml"
     depends_on:
       - app
+      - zookeeper_click
+      - clickhouse-node1
+      - clickhouse-node2
+      - clickhouse-node3
+      - clickhouse-node4
+
   zookeeper_click:
     image: zookeeper:latest
     container_name: zookeeper_click
@@ -44,7 +49,7 @@ services:
       - "8123:8123"
       - "9000:9000"
     volumes:
-      - "./clickhouse/node1:/etc/clickhouse-server"
+      - "../clickhouse/node1:/etc/clickhouse-server"
     depends_on:
       - zookeeper_click
 
@@ -53,7 +58,7 @@ services:
     container_name: clickhouse-node2
     hostname: clickhouse-node2
     volumes:
-      - "./clickhouse/node2:/etc/clickhouse-server"
+      - "../clickhouse/node2:/etc/clickhouse-server"
     depends_on:
       - zookeeper_click
 
@@ -62,7 +67,7 @@ services:
     container_name: clickhouse-node3
     hostname: clickhouse-node3
     volumes:
-      - "./clickhouse/node3:/etc/clickhouse-server"
+      - "../clickhouse/node3:/etc/clickhouse-server"
     depends_on:
       - zookeeper_click
 
@@ -71,7 +76,7 @@ services:
     container_name: clickhouse-node4
     hostname: clickhouse-node4
     volumes:
-      - "./clickhouse/node2:/etc/clickhouse-server"
+      - "../clickhouse/node2:/etc/clickhouse-server"
     depends_on:
       - zookeeper_click
 
@@ -99,6 +104,11 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_CREATE_TOPICS: "film"
       KAFKA_JMX_PORT: 9101
       KAFKA_JMX_HOSTNAME: localhost

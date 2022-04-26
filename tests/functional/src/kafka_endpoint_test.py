@@ -1,6 +1,5 @@
 import logging
 from http import HTTPStatus
-from typing import Any, Dict
 
 import pytest
 
@@ -16,7 +15,10 @@ class TestUserAuth:
 
     async def test_post_data(self, make_get_request, create_jwt_token):
         response = await make_get_request(
-            method="POST", url=f"{PATH}/event", json=self.data, jwt=create_jwt_token
+            method="POST",
+            url=f"{PATH}/event",
+            json=self.data,
+            jwt_token=create_jwt_token,
         )
         assert response.status == HTTPStatus.OK
-        logger.info("Response status : %s", response.status)
+        logger.info("None - Response status : %s", response.status)

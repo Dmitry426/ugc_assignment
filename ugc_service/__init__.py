@@ -1,10 +1,20 @@
+__all__ = ["app"]
+
+import logging.config
+
 from fastapi import Depends, FastAPI
 
 from ugc_service.api.v1 import ugc
 
 from .core.config import KafkaSettings, ProjectSettings
+from .core.logger import LOGGING
 from .db.storage import get_aio_producer
-from .services.kafka_unit_producer import AIOProducer
+from .services.kafka_utils import AIOProducer
+from .services.sentry_service import setry_app
+
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger("UGC_service")
+logger.info("None - Логирование UGC началось")
 
 base_settings = ProjectSettings()
 kafka_settings = KafkaSettings()
@@ -16,8 +26,8 @@ app = FastAPI(
 
 
 @app.on_event("startup")
-async def startup_event(aio_producer: AIOProducer = Depends(get_aio_producer)):
-    pass
+async def startup_event():
+    setry_app(app)
 
 
 @app.on_event("shutdown")

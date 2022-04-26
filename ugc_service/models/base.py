@@ -2,12 +2,12 @@ import orjson
 from pydantic import BaseModel
 
 
-def orjson_dumps(v, *, default):
-    return orjson.dumps(v, default=default).decode()
+def orjson_dumps(arg, *, default):
+    return orjson.dumps(arg, default=default).decode()
 
 
 class JsonConfig(BaseModel):
-    def toJSON(self):
+    def to_json(self):
         return orjson.dumps(self, default=lambda o: o.__dict__)
 
     class Config:
