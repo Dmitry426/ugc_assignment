@@ -8,11 +8,17 @@
 описаны в файле `ugc_service/core/config.py`. В данных режимах запуска доступно обновление кода приложения
 на лету, без перезапуска (кроме случаев добавления новых зависимостей).
 
+# GitHub Actions
+GitHub Actions работают при мердже в dev и main ветки. Производится проверка линтером wemake, проверка типов mypy и
+запуск тестов.
 
-# You can start Fast api server by runing . 
+# Исследования хранилищ
+Исследования хранилищ mongo и clickhouse находятся в папке mongo_test.
+
+# You can start Fast api server by runing .
 
 ```bash
-$ docker-compose up -d  --bulid 
+$ docker-compose up -d  --bulid
 ```
 # Or locally
 ```bash
@@ -56,6 +62,7 @@ $  make test
 ```bash
 $  make test-cleanup
 ```
+
 # Проектная работа 8 спринта
 
 Проектные работы в этом модуле выполняются в командах по 3 человека. Процесс обучения аналогичен сервису, где вы изучали асинхронное программирование. Роли в команде и отправка работы на ревью не меняются.
