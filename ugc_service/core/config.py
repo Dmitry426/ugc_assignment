@@ -59,5 +59,5 @@ class CentrySettings(BaseSettings):
     class Config:
         env_prefix = "CENTRY_"
 
-    dsn: SecretStr
+    dsn: SecretStr = None
     traces_sample_rate: float = 1
