@@ -10,7 +10,7 @@ from .core.config import KafkaSettings, ProjectSettings
 from .core.logger import LOGGING
 from .db.storage import get_aio_producer
 from .services.kafka_utils import AIOProducer
-from .services.sentry_service import setry_app
+from .services.sentry_service import sentry_app
 
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger("UGC_service")
@@ -24,10 +24,12 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
+sentry_app(app)
+
 
 @app.on_event("startup")
 async def startup_event():
-    setry_app(app)
+    pass
 
 
 @app.on_event("shutdown")
