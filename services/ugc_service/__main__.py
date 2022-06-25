@@ -2,8 +2,8 @@ import logging
 
 import uvicorn
 
-from ugc_service import app as application
-from ugc_service.core.logger import LOGGING
+from . import app as application
+from .core.logger import LOGGING
 
 from .core.config import UvicornSettings
 

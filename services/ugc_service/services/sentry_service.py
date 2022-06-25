@@ -6,13 +6,13 @@ import sentry_sdk
 from fastapi import FastAPI
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
-from ugc_service.core.config import CentrySettings
+from ..core.config import CentrySettings
 
 sentry_settings = CentrySettings()
 logger = logging.getLogger(__name__)
 
 
-def sentry_app(app: FastAPI) -> None:
+def sentry_app(app: FastAPI) :
     if sentry_settings.dsn.get_secret_value():
         sentry_sdk.init(
             dsn=sentry_settings.dsn.get_secret_value(),
