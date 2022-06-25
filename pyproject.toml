@@ -16,6 +16,8 @@ aiohttp = "^3.8.1"
 backoff = "^1.11.1"
 confluent-kafka = "^1.8.2"
 sentry-sdk = "^1.5.10"
+mypy = "^0.961"
+pylint = "^2.14.3"
 
 
 [tool.poetry.dev-dependencies]

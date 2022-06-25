@@ -16,10 +16,10 @@ mypy:
 	mypy -p ugc_service
 
 flake8:
-	flake8 .
+	flake8 services/etl
 
 pylint:
-	pylint etl_events ugc_service tests
+	pylint services
 
 lint: isort black mypy flake8 pylint
 
