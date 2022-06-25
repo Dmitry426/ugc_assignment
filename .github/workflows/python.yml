@@ -61,7 +61,7 @@ jobs:
     - name: Run Tests
       if: always()
       run: |
-        cp .env_example .env
+        cp .env.example .env
         make test
 
 #    - name: Notification to telegram
