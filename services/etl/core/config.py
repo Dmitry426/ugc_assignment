@@ -25,7 +25,7 @@ class ClickHouseSettings(BaseSettings):
 
 
 class Settings(KafkaSettings, ClickHouseSettings):
-    """Represents ETL settings."""
+    """Represents etl settings."""
 
     class Config:
         env_prefix = "ETL_"
