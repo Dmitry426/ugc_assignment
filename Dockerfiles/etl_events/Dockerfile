@@ -66,13 +66,5 @@ WORKDIR /src
 
 EXPOSE $PORT_APP
 
-CMD python -m  etl_events
+CMD python -m  etl
 
-
-# `production` image used for runtime
-FROM python-base as production
-ENV FASTAPI_ENV=production
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-COPY gevent_runner.py .
-COPY app ./etl_events
-CMD python -m  etl_events
