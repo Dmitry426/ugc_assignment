@@ -38,19 +38,19 @@ jobs:
     - name: Create directories
       run: |
         mkdir -p reports/ugc_service/wemake-python-styleguide/
-        mkdir -p reports/etl_events/wemake-python-styleguide/
+        mkdir -p reports/etl/wemake-python-styleguide/
         mkdir -p reports/ugc_service/mypy/
-        mkdir -p reports/etl_events/mypy/
+        mkdir -p reports/etl/mypy/
 
     - name: Lint with wemake-python-styleguide
       run: |
-        flake8 ugc_service --exit-zero --format=html --htmldir=reports/ugc_service/wemake-python-styleguide/
-        flake8 etl_events --exit-zero --format=html --htmldir=reports/etl_events/wemake-python-styleguide/
+        flake8 services/ugc_service --exit-zero --format=html --htmldir=reports/ugc_service/wemake-python-styleguide/
+        flake8 services/etl --exit-zero --format=html --htmldir=reports/etl/wemake-python-styleguide/
 
     - name: Check typing with mypy
       run: |
-        mypy --html-report reports/ugc_service/mypy/ ./ugc_service || true
-        mypy --html-report reports/etl_events/mypy/ ./etl_events || true
+        mypy --html-report reports/ugc_service/mypy/ ./services/ugc_service|| true
+        mypy --html-report reports/etl/mypy/ ./services/etl || true
 
     - name: Upload reports
       uses: actions/upload-artifact@v3
@@ -64,11 +64,11 @@ jobs:
         cp .env_example .env
         make test
 
-    - name: Notification to telegram
-      if: cancelled() == false
-      uses: xinthink/action-telegram@v1.1
-      with:
-        botToken: ${{ secrets.BotToken }}
-        chatId: ${{ secrets.ChatID }}
-        jobStatus: ${{ job.status }}
-        skipSuccess: false
+#    - name: Notification to telegram
+#      if: cancelled() == false
+#      uses: xinthink/action-telegram@v1.1
+#      with:
+#        botToken: ${{ secrets.BotToken }}
+#        chatId: ${{ secrets.ChatID }}
+#        jobStatus: ${{ job.status }}
+#        skipSuccess: false
