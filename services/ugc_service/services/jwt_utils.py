@@ -7,7 +7,7 @@ from typing import List, Optional
 import jwt
 from fastapi import HTTPException
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("UGC_service")
 
 
 class Auth:

@@ -2,9 +2,9 @@ __all__ = ["AuthService", "KafkaStorage"]
 
 from abc import ABC
 
-from ugc_service.core.config import JwtSettings, KafkaSettings
-from ugc_service.services.jwt_utils import Auth
-from ugc_service.services.kafka_utils import AIOProducer
+from ..core.config import JwtSettings, KafkaSettings
+from ..services.jwt_utils import Auth
+from ..services.kafka_utils import AIOProducer
 
 jwt = JwtSettings()
 kafka_settings = KafkaSettings()

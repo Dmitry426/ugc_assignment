@@ -1,3 +1,3 @@
 __all__ = ["app"]
 
-from ugc_service import app  # noqa: E402
+from services.ugc_service import app  # noqa: E402

@@ -5,7 +5,7 @@ import logging
 import backoff
 from clickhouse_driver import Client
 
-from etl_events.core.config import settings
+from ..core.config import settings
 
 logger = logging.getLogger("ETL_events")
 
@@ -14,8 +14,9 @@ logger = logging.getLogger("ETL_events")
     backoff.expo, exception=(RuntimeError, ConnectionError, TimeoutError), max_tries=3
 )
 def clickhouse_client() -> Client:
-    client: Client = Client(host=settings.c_host, port=settings.c_port)
-    if client:
-        logger.info("None - подключился к ClickHouse")
-    else:
-        logger.error("None - не смог подключиться к ClickHouse")
+    try:
+        client = Client(host=settings.c_host, port=settings.c_port)
+        logger.info("None - connected to  ClickHouse")
+        return client
+    except (ConnectionError, RuntimeError) as e:
+        logger.error(e, exc_info=True)

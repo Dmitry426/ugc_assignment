@@ -5,8 +5,8 @@ from typing import Optional
 
 import backoff
 
-from ugc_service.core.config import ProjectSettings
-from ugc_service.services.base_service import KafkaStorage
+from ..core.config import ProjectSettings
+from ..services.base_service import KafkaStorage
 
 logger = logging.getLogger("UGC_service")
 
@@ -20,7 +20,7 @@ aio_producer: Optional[KafkaStorage] = None
     exception=(RuntimeError, ConnectionError, TimeoutError),
     max_time=project_settings.ping_backoff_timeout,
 )
-async def get_aio_producer() -> KafkaStorage:
+async def get_aio_producer() -> Optional[KafkaStorage]:
     global aio_producer
     aio_producer = KafkaStorage()
     return aio_producer

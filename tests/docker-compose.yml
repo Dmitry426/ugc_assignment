@@ -13,7 +13,7 @@ services:
     env_file:
       - ../.env
     volumes:
-      - "../ugc_service:/src/ugc_service"
+      - "../services/ugc_service:/src/ugc_service"
     depends_on:
       - broker
 
@@ -49,7 +49,7 @@ services:
       - "8123:8123"
       - "9000:9000"
     volumes:
-      - "../clickhouse/node1:/etc/clickhouse-server"
+      - "../Configs/clickhouse/node1:/etc/clickhouse-server"
     depends_on:
       - zookeeper_click
 
@@ -58,7 +58,7 @@ services:
     container_name: clickhouse-node2
     hostname: clickhouse-node2
     volumes:
-      - "../clickhouse/node2:/etc/clickhouse-server"
+      - "../Configs/clickhouse/node2:/etc/clickhouse-server"
     depends_on:
       - zookeeper_click
 
@@ -67,7 +67,7 @@ services:
     container_name: clickhouse-node3
     hostname: clickhouse-node3
     volumes:
-      - "../clickhouse/node3:/etc/clickhouse-server"
+      - "../Configs/clickhouse/node3:/etc/clickhouse-server"
     depends_on:
       - zookeeper_click
 
@@ -76,7 +76,7 @@ services:
     container_name: clickhouse-node4
     hostname: clickhouse-node4
     volumes:
-      - "../clickhouse/node2:/etc/clickhouse-server"
+      - "../Configs/clickhouse/node2:/etc/clickhouse-server"
     depends_on:
       - zookeeper_click
 
